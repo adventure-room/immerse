@@ -1,14 +1,18 @@
 package com.programyourhome.adventureroom.immerse.module;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.ServiceLoader;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 import com.programyourhome.adventureroom.dsl.regex.AbstractRegexDslAdventureModule;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
 import com.programyourhome.adventureroom.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
+import com.programyourhome.adventureroom.immerse.dsl.converters.StopBackgroundMusicActionConverter;
+import com.programyourhome.adventureroom.immerse.model.SpeakerExternalResource;
 import com.programyourhome.adventureroom.immerse.service.Immerse;
+import com.programyourhome.adventureroom.model.resource.ResourceDescriptor;
+import com.programyourhome.immerse.domain.location.Vector3D;
 
 public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
 
@@ -30,7 +34,19 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
         this.config.name = "Immerse";
         this.config.description = "Module to use the Immerse service";
 
-        this.config.deamons.put("Connect to Immerse client", () -> this.immerse.configure(this.config.host, this.config.port));
+        ResourceDescriptor<SpeakerExternalResource> speakersDescriptor = new ResourceDescriptor<>();
+        speakersDescriptor.id = "speakers";
+        speakersDescriptor.name = "Speakers";
+        speakersDescriptor.clazz = SpeakerExternalResource.class;
+        this.config.addResourceDescriptor(speakersDescriptor);
+
+        this.config.addConverter(String.class, Vector3D.class, input -> {
+            String[] coordinates = input.split(",");
+            Function<Integer, Integer> parseCoordinate = index -> Integer.parseInt(coordinates[index].trim());
+            return new Vector3D(parseCoordinate.apply(0), parseCoordinate.apply(1), parseCoordinate.apply(2));
+        });
+
+        this.config.addTask("Connect to Immerse client", () -> this.immerse.connect(this.config.host, this.config.port));
     }
 
     public Immerse getImmerse() {
@@ -43,12 +59,14 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
     }
 
     @Override
-    protected Map<Pattern, RegexActionConverter<?>> getRegexActionConverters() {
-        Map<Pattern, RegexActionConverter<?>> converters = new HashMap<>();
-        Pattern pattern = Pattern.compile("play background music (?<id>[a-z]+)");
-        converters.put(pattern, new PlayBackgroundMusicActionConverter());
+    protected Collection<RegexActionConverter<?>> getRegexActionConverters() {
+        return Arrays.asList(new PlayBackgroundMusicActionConverter(),
+                new StopBackgroundMusicActionConverter());
+    }
 
-        return converters;
+    @Override
+    public void stop() {
+        this.immerse.quit();
     }
 
 }

@@ -8,9 +8,14 @@ import com.programyourhome.adventureroom.model.Adventure;
 public class PlayBackgroundMusicActionConverter implements RegexActionConverter<PlayBackgroundMusicAction> {
 
     @Override
+    public String getRegexLine() {
+        return "play background music " + RESOURCE_ID;
+    }
+
+    @Override
     public PlayBackgroundMusicAction convert(MatchResult matchResult, Adventure adventure) {
         PlayBackgroundMusicAction action = new PlayBackgroundMusicAction();
-        action.audioId = matchResult.getValue("id");
+        action.audioId = matchResult.getValue(RESOURCE_ID);
         return action;
     }
 

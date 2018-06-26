@@ -15,5 +15,10 @@
     		<artifactId>model</artifactId>
     		<version>0.0.2-SNAPSHOT</version>
     	</dependency>
+    	<dependency>
+    		<groupId>com.programyourhome.immerse</groupId>
+    		<artifactId>domain</artifactId>
+    		<version>0.8.0-BETA-SNAPSHOT</version>
+    	</dependency>
     </dependencies>
 </project>

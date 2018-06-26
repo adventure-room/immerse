@@ -1,13 +1,21 @@
 package com.programyourhome.adventureroom.immerse.executor;
 
+import java.util.UUID;
+
 import com.programyourhome.adventureroom.immerse.model.PlayBackgroundMusicAction;
 import com.programyourhome.iotadventure.runner.context.ExecutionContext;
 
 public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<PlayBackgroundMusicAction> {
 
+    public static final String BACKGROUND_MUSIC_VARIABLE_NAME = "immerse.background.music";
+
     @Override
     public void execute(PlayBackgroundMusicAction action, ExecutionContext context) {
-        this.getImmerse(context).playBackgroundMusic(action.audioId);
+        if (context.isVariableDefined(BACKGROUND_MUSIC_VARIABLE_NAME)) {
+            throw new IllegalStateException("There is already background music playing");
+        }
+        UUID playbackID = this.getImmerse(context).playAtSpeakers("http://localhost:19161/audio/" + action.audioId, this.getSpeakers(context), true, false);
+        context.setVariableValue(BACKGROUND_MUSIC_VARIABLE_NAME, playbackID);
     }
 
 }
