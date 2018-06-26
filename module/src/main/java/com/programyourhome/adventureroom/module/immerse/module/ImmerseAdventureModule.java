@@ -1,4 +1,4 @@
-package com.programyourhome.adventureroom.immerse.module;
+package com.programyourhome.adventureroom.module.immerse.module;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,11 +7,11 @@ import java.util.function.Function;
 
 import com.programyourhome.adventureroom.dsl.regex.AbstractRegexDslAdventureModule;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
-import com.programyourhome.adventureroom.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
-import com.programyourhome.adventureroom.immerse.dsl.converters.StopBackgroundMusicActionConverter;
-import com.programyourhome.adventureroom.immerse.model.SpeakerExternalResource;
-import com.programyourhome.adventureroom.immerse.service.Immerse;
 import com.programyourhome.adventureroom.model.resource.ResourceDescriptor;
+import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
+import com.programyourhome.adventureroom.module.immerse.dsl.converters.StopBackgroundMusicActionConverter;
+import com.programyourhome.adventureroom.module.immerse.model.SpeakerExternalResource;
+import com.programyourhome.adventureroom.module.immerse.service.Immerse;
 import com.programyourhome.immerse.domain.location.Vector3D;
 
 public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {

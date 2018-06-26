@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.programyourhome.adventureroom.immerse</groupId>
+        <groupId>com.programyourhome.adventureroom.module.immerse</groupId>
         <artifactId>parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -18,7 +18,7 @@
     	<dependency>
     		<groupId>${project.groupId}</groupId>
     		<artifactId>model</artifactId>
-    		<version>0.0.1-SNAPSHOT</version>
+    		<version>${project.version}</version>
     	</dependency>
     </dependencies>
 </project>

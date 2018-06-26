@@ -1,4 +1,4 @@
-package com.programyourhome.adventureroom.immerse.module;
+package com.programyourhome.adventureroom.module.immerse.module;
 
 import com.programyourhome.adventureroom.model.module.ModuleConfig;
 

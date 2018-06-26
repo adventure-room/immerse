@@ -1,4 +1,4 @@
-package com.programyourhome.adventureroom.immerse.model;
+package com.programyourhome.adventureroom.module.immerse.model;
 
 import com.programyourhome.adventureroom.model.resource.ExternalResource;
 import com.programyourhome.immerse.domain.speakers.Speaker;

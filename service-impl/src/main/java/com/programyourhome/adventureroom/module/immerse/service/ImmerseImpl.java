@@ -1,4 +1,4 @@
-package com.programyourhome.adventureroom.immerse.service;
+package com.programyourhome.adventureroom.module.immerse.service;
 
 import static com.programyourhome.immerse.toolbox.audio.playback.ForeverPlayback.forever;
 import static com.programyourhome.immerse.toolbox.audio.playback.LoopPlayback.once;
@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import com.programyourhome.adventureroom.module.immerse.service.Immerse;
 import com.programyourhome.immerse.audiostreaming.format.ImmerseAudioFormat;
 import com.programyourhome.immerse.audiostreaming.format.SampleRate;
 import com.programyourhome.immerse.audiostreaming.format.SampleSize;

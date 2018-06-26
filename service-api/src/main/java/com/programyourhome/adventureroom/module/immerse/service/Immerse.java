@@ -1,4 +1,4 @@
-package com.programyourhome.adventureroom.immerse.service;
+package com.programyourhome.adventureroom.module.immerse.service;
 
 import java.util.Collection;
 import java.util.UUID;

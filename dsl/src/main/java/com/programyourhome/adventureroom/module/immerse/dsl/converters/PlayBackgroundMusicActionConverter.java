@@ -1,9 +1,9 @@
-package com.programyourhome.adventureroom.immerse.dsl.converters;
+package com.programyourhome.adventureroom.module.immerse.dsl.converters;
 
 import com.programyourhome.adventureroom.dsl.regex.MatchResult;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
-import com.programyourhome.adventureroom.immerse.model.PlayBackgroundMusicAction;
 import com.programyourhome.adventureroom.model.Adventure;
+import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusicAction;
 
 public class PlayBackgroundMusicActionConverter implements RegexActionConverter<PlayBackgroundMusicAction> {
 

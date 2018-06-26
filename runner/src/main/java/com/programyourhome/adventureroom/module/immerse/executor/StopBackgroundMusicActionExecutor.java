@@ -1,10 +1,10 @@
-package com.programyourhome.adventureroom.immerse.executor;
+package com.programyourhome.adventureroom.module.immerse.executor;
 
-import static com.programyourhome.adventureroom.immerse.executor.PlayBackgroundMusicActionExecutor.BACKGROUND_MUSIC_VARIABLE_NAME;
+import static com.programyourhome.adventureroom.module.immerse.executor.PlayBackgroundMusicActionExecutor.BACKGROUND_MUSIC_VARIABLE_NAME;
 
 import java.util.UUID;
 
-import com.programyourhome.adventureroom.immerse.model.StopBackgroundMusicAction;
+import com.programyourhome.adventureroom.module.immerse.model.StopBackgroundMusicAction;
 import com.programyourhome.iotadventure.runner.context.ExecutionContext;
 
 public class StopBackgroundMusicActionExecutor extends AbstractImmerseExecutor<StopBackgroundMusicAction> {
