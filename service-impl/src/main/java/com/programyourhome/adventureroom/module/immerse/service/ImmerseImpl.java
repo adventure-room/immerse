@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import com.programyourhome.adventureroom.module.immerse.service.Immerse;
 import com.programyourhome.immerse.audiostreaming.format.ImmerseAudioFormat;
 import com.programyourhome.immerse.audiostreaming.format.SampleRate;
 import com.programyourhome.immerse.audiostreaming.format.SampleSize;
@@ -68,7 +67,9 @@ public class ImmerseImpl implements Immerse {
 
     @Override
     public void quit() {
-        this.client.stopMixer();
+        if (this.client != null) {
+            this.client.stopMixer();
+        }
     }
 
     private Scenario createScenario(String url, Collection<Speaker> speakers, boolean loop) {
