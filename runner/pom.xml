@@ -8,17 +8,17 @@
         <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>runner</artifactId>
-    
+
     <dependencies>
-    	<dependency>
-    		<groupId>${project.groupId}</groupId>
-    		<artifactId>module</artifactId>
-    		<version>${project.version}</version>
-    	</dependency>
-    	<dependency>
-    		<groupId>com.programyourhome.adventureroom</groupId>
-    		<artifactId>runner</artifactId>
-    		<version>0.0.2-SNAPSHOT</version>
-    	</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.programyourhome.adventureroom</groupId>
+            <artifactId>runner</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
