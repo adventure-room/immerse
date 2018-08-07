@@ -3,6 +3,7 @@ package com.programyourhome.adventureroom.module.immerse.executor;
 import java.util.UUID;
 
 import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusicAction;
+import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
 import com.programyourhome.iotadventure.runner.context.ExecutionContext;
 
 public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<PlayBackgroundMusicAction> {
@@ -14,7 +15,8 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
         if (context.isVariableDefined(BACKGROUND_MUSIC_VARIABLE_NAME)) {
             throw new IllegalStateException("There is already background music playing");
         }
-        UUID playbackID = this.getImmerse(context).playAtSpeakers("http://localhost:19161/audio/" + action.audioId, this.getSpeakers(context), true, false);
+        UUID playbackID = this.getImmerse(context).playAtSpeakers("http://localhost:19161/audio/" + action.audioId, AudioFileType.WAVE,
+                this.getSpeakers(context), true, false);
         context.setVariableValue(BACKGROUND_MUSIC_VARIABLE_NAME, playbackID);
     }
 
