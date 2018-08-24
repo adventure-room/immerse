@@ -5,7 +5,7 @@ import static com.programyourhome.immerse.toolbox.audio.playback.LoopPlayback.on
 import static com.programyourhome.immerse.toolbox.audio.resource.UrlAudioResource.urlWithFormat;
 import static com.programyourhome.immerse.toolbox.audio.resource.UrlAudioResource.urlWithType;
 import static com.programyourhome.immerse.toolbox.location.dynamic.FixedDynamicLocation.fixed;
-import static com.programyourhome.immerse.toolbox.speakers.algorithms.normalize.MaxSumNormalizeAlgorithm.maxSum;
+import static com.programyourhome.immerse.toolbox.speakers.algorithms.normalize.FractionalNormalizeAlgorithm.fractional;
 import static com.programyourhome.immerse.toolbox.speakers.algorithms.volumeratios.FixedVolumeRatiosAlgorithm.fixed;
 import static com.programyourhome.immerse.toolbox.util.TestData.room;
 import static com.programyourhome.immerse.toolbox.util.TestData.scenario;
@@ -96,7 +96,7 @@ public class ImmerseImpl implements Immerse {
                         .toMap(id -> id, id -> speakerIds.contains(id) ? 1.0 : 0.0));
         Scenario scenario = scenario(this.getRoom(),
                 settings(factoryAudioResource, fixed(100, 60, 80), fixed(100, 60, 80),
-                        fixed(fixedSpeakerVolumeRatios), maxSum(1), playback));
+                        fixed(fixedSpeakerVolumeRatios), fractional(), playback));
         return scenario;
     }
 
