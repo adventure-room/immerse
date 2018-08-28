@@ -1,5 +1,7 @@
 package com.programyourhome.adventureroom.module.immerse.dsl.converters;
 
+import java.util.Map;
+
 import com.programyourhome.adventureroom.dsl.regex.MatchResult;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
 import com.programyourhome.adventureroom.model.Adventure;
@@ -8,8 +10,8 @@ import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusi
 public class PlayBackgroundMusicActionConverter implements RegexActionConverter<PlayBackgroundMusicAction> {
 
     @Override
-    public String getRegexLine() {
-        return "play background music " + RESOURCE_ID;
+    public Map<String, String> getRegexMap() {
+        return this.createRegexes(DEFAULT, "play background music " + RESOURCE_ID);
     }
 
     @Override

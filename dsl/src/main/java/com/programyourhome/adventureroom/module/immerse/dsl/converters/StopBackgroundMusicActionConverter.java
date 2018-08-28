@@ -1,5 +1,7 @@
 package com.programyourhome.adventureroom.module.immerse.dsl.converters;
 
+import java.util.Map;
+
 import com.programyourhome.adventureroom.dsl.regex.MatchResult;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
 import com.programyourhome.adventureroom.model.Adventure;
@@ -8,8 +10,8 @@ import com.programyourhome.adventureroom.module.immerse.model.StopBackgroundMusi
 public class StopBackgroundMusicActionConverter implements RegexActionConverter<StopBackgroundMusicAction> {
 
     @Override
-    public String getRegexLine() {
-        return "stop background music";
+    public Map<String, String> getRegexMap() {
+        return this.createRegexes(DEFAULT, "stop background music");
     }
 
     @Override

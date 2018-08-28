@@ -43,8 +43,8 @@ public class ImmerseImpl implements Immerse {
     // TODO: refactor: at least remove duplication, maybe change api to more matching methods
     // Maybe have some kind of PlaybackConfig thingy with a builder that covers all different setups somehow...
     @Override
-    public UUID playAtSpeakers(String url, AudioFileType type, Collection<Speaker> speakers, boolean loop, boolean waitFor) {
-        UUID playbackId = this.client.playScenario(this.createScenario(UrlAudioResource.urlWithType(url, type), speakers, loop)).getResult();
+    public UUID playAtSpeakers(String url, AudioFileType type, Collection<Integer> speakerIds, boolean loop, boolean waitFor) {
+        UUID playbackId = this.client.playScenario(this.createScenario(UrlAudioResource.urlWithType(url, type), speakerIds, loop)).getResult();
         if (waitFor) {
             this.client.waitForPlayback(playbackId);
         }
@@ -52,8 +52,8 @@ public class ImmerseImpl implements Immerse {
     }
 
     @Override
-    public UUID playAtSpeakers(String url, ImmerseAudioFormat format, Collection<Speaker> speakers, boolean loop, boolean waitFor) {
-        UUID playbackId = this.client.playScenario(this.createScenario(UrlAudioResource.urlWithFormat(url, format), speakers, loop)).getResult();
+    public UUID playAtSpeakers(String url, ImmerseAudioFormat format, Collection<Integer> speakerIds, boolean loop, boolean waitFor) {
+        UUID playbackId = this.client.playScenario(this.createScenario(UrlAudioResource.urlWithFormat(url, format), speakerIds, loop)).getResult();
         if (waitFor) {
             this.client.waitForPlayback(playbackId);
         }
@@ -77,11 +77,9 @@ public class ImmerseImpl implements Immerse {
         }
     }
 
-    private Scenario createScenario(Factory<AudioResource> audioResourceFactory, Collection<Speaker> speakers, boolean loop) {
+    private Scenario createScenario(Factory<AudioResource> audioResourceFactory, Collection<Integer> speakerIds, boolean loop) {
         ImmerseSettings settings = this.client.getSettings().getResult();
         Factory<Playback> playback = loop ? forever() : once();
-        // TODO: convenience method for all speakers
-        Collection<Integer> speakerIds = StreamEx.of(speakers).map(Speaker::getId).toList();
         SpeakerVolumeRatios fixedSpeakerVolumeRatios = new SpeakerVolumeRatios(
                 StreamEx.of(settings.getRoom().getSpeakers().values())
                         .map(Speaker::getId)

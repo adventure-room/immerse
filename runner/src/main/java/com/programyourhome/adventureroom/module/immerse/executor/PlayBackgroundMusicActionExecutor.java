@@ -16,7 +16,7 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
             throw new IllegalStateException("There is already background music playing");
         }
         UUID playbackID = this.getImmerse(context).playAtSpeakers("http://localhost:19161/audio/" + action.audioId, AudioFileType.WAVE,
-                this.getSpeakers(context), true, false);
+                this.getSpeakerIds(context), true, false);
         context.setVariableValue(BACKGROUND_MUSIC_VARIABLE_NAME, playbackID);
     }
 

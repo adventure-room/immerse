@@ -22,9 +22,9 @@ public abstract class AbstractImmerseExecutor<A extends Action> implements Actio
         return this.getModule(context).getImmerse();
     }
 
-    protected Collection<Speaker> getSpeakers(ExecutionContext context) {
-        return StreamEx.of(context.getResources(SpeakerExternalResource.class))
-                .map(SpeakerExternalResource::getWrappedObject)
+    protected Collection<Integer> getSpeakerIds(ExecutionContext context) {
+        return StreamEx.of(context.getAdventure().getExternalResources(SpeakerExternalResource.class))
+                .map(Speaker::getId)
                 .toList();
     }
 
