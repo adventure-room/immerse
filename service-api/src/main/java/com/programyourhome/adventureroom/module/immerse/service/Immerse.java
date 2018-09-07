@@ -11,6 +11,8 @@ public interface Immerse {
 
     public void connect(ImmerseSettings settings, String host, int port);
 
+    // public UUID startPlayback(Playback)
+
     public UUID playAtSpeakers(String url, ImmerseAudioFormat format, Collection<Integer> speakerIds, boolean loop, boolean waitFor);
 
     public UUID playAtSpeakers(String url, AudioFileType type, Collection<Integer> speakerIds, boolean loop, boolean waitFor);

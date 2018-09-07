@@ -3,13 +3,13 @@ package com.programyourhome.adventureroom.module.immerse.module;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.programyourhome.adventureroom.dsl.regex.AbstractRegexDslAdventureModule;
 import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
 import com.programyourhome.adventureroom.model.Adventure;
+import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.resource.ResourceDescriptor;
 import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
 import com.programyourhome.adventureroom.module.immerse.dsl.converters.StopBackgroundMusicActionConverter;
@@ -31,14 +31,12 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
 
     public static final String ID = "immerse";
 
-    private Immerse immerse;
+    private final Immerse immerse;
     private ImmerseConfig config;
     private ImmerseSettings immerseSettings;
 
     public ImmerseAdventureModule() {
-        // TODO: move to util
-        // We assume there will be one implementation available on the classpath. If not, behavior is undefined.
-        ServiceLoader.load(Immerse.class).forEach(impl -> this.immerse = impl);
+        this.immerse = this.loadApiImpl(Immerse.class);
         this.initConfig();
     }
 
@@ -82,7 +80,7 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
     }
 
     @Override
-    public void start(Adventure adventure) {
+    public void start(Adventure adventure, ExecutionContext context) {
         Map<String, RoomExternalResource> rooms = adventure.getResourceMap(RoomExternalResource.class);
         if (rooms.size() != 1) {
             throw new IllegalStateException("There must be exactly 1 room configured for Immerse, not " + rooms.size());
@@ -140,7 +138,7 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
     }
 
     @Override
-    public void stop(Adventure adventure) {
+    public void stop(Adventure adventure, ExecutionContext context) {
         this.immerse.quit();
     }
 
