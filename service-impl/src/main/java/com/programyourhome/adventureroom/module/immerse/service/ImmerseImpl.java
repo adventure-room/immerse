@@ -30,7 +30,7 @@ public class ImmerseImpl implements Immerse {
 
     @Override
     public ScenarioBuilder scenarioBuilder() {
-        return new ScenarioBuilderImpl();
+        return new ScenarioBuilderImpl(this.settings);
     }
 
     @Override

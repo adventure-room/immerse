@@ -2,9 +2,11 @@ package com.programyourhome.adventureroom.module.immerse.service;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.programyourhome.immerse.domain.Scenario;
+import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
 import com.programyourhome.immerse.domain.format.ImmerseAudioFormat;
 import com.programyourhome.immerse.domain.location.Vector3D;
 
@@ -35,9 +37,15 @@ public interface ScenarioBuilder {
      */
     public ScenarioBuilder urlWithFormat(String url, ImmerseAudioFormat format);
 
+    public ScenarioBuilder urlWithType(String url, AudioFileType type);
+
     public ScenarioBuilder sourceAtSpeaker(int speakerId);
 
+    public ScenarioBuilder sourceAtSpeaker(int speakerId, double volume);
+
     public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds);
+
+    public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds, double volume);
 
     /**
      * Set the source position to be all speakers together.
@@ -46,13 +54,17 @@ public interface ScenarioBuilder {
      */
     public ScenarioBuilder sourceAtAllSpeakers();
 
+    public ScenarioBuilder sourceAtAllSpeakers(double volume);
+
     public ScenarioBuilder sourceAtLocation(Vector3D location);
 
     // TODO: Create path builder with keyframes and possible other options like accelerate etc
-    public ScenarioBuilder sourceAtPath(Map<Integer, Vector3D> path, boolean loop);
+    // TODO: idea: instead of just units per second, have something like a Speed that can be set
+    // wih static, dynamic speeds and human readable options like walking, running, etc. (where 1 unit is set to 1 match 1 cm or m or ?)
+    public ScenarioBuilder sourceAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop);
 
     // TODO: Create circling builder
-    public ScenarioBuilder sourceCircling(Vector3D center, double radius, double unitsPerSecond, boolean clockwise);
+    public ScenarioBuilder sourceCircling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise);
 
     /**
      * Set the listener position to be static in the center of the room.
@@ -73,7 +85,6 @@ public interface ScenarioBuilder {
 
     public ScenarioBuilder fixedVolumesAbsolute(Map<Integer, Double> absoluteSpeakerVolumes);
 
-    // Default
     public ScenarioBuilder normalizeVolume();
 
     /**
@@ -81,6 +92,7 @@ public interface ScenarioBuilder {
      * Useful in combination with the field of hearing volume, so the total volume
      * will always be roughly equivalent, independent of the amount of speakers in 'range'.
      */
+    // Default
     public ScenarioBuilder volumeAsOneSpeaker();
 
     public ScenarioBuilder maxSumVolume(double maxSum);

@@ -11,13 +11,13 @@ public class PlayBackgroundMusicActionConverter implements RegexActionConverter<
 
     @Override
     public Map<String, String> getRegexMap() {
-        return this.createRegexes(DEFAULT, "play background music " + RESOURCE_ID);
+        return this.createRegexes(DEFAULT, "play background music " + FILENAME);
     }
 
     @Override
     public PlayBackgroundMusicAction convert(MatchResult matchResult, Adventure adventure) {
         PlayBackgroundMusicAction action = new PlayBackgroundMusicAction();
-        action.audioId = matchResult.getValue(RESOURCE_ID);
+        action.filename = matchResult.getValue(FILENAME);
         return action;
     }
 
