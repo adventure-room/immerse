@@ -104,6 +104,7 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds, double volume) {
         // Source location does not matter with fixed speaker volumes, so just set to the center of the room.List
         this.immerseScenarioSettingsBuilder.sourceLocation(this.calculateCenterOfRoom());
+        // TODO: this must be replaced by a general volume setting
         return this.fixedVolumesAbsolute(this.volumeAtSpeakers(speakerIds, volume));
     }
 
@@ -120,7 +121,7 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     @Override
     public ScenarioBuilder sourceAtLocation(Vector3D location) {
         this.immerseScenarioSettingsBuilder.sourceLocation(FixedDynamicLocation.fixed(location));
-        return this;
+        return this.fieldOfHearingVolume();
     }
 
     @Override

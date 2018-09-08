@@ -10,6 +10,7 @@ import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusi
 import com.programyourhome.immerse.domain.Scenario;
 import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
 
+//TODO: merge building the scenario logic with PlayAudioActionExecutor
 public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<PlayBackgroundMusicAction> {
 
     public static final String BACKGROUND_MUSIC_VARIABLE_NAME = "immerse.background.music";

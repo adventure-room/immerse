@@ -11,6 +11,7 @@ import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
 import com.programyourhome.adventureroom.model.Adventure;
 import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.resource.ResourceDescriptor;
+import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayAudioActionConverter;
 import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
 import com.programyourhome.adventureroom.module.immerse.dsl.converters.StopBackgroundMusicActionConverter;
 import com.programyourhome.adventureroom.module.immerse.model.OutputFormatExternalResource;
@@ -133,7 +134,8 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
 
     @Override
     protected Collection<RegexActionConverter<?>> getRegexActionConverters() {
-        return Arrays.asList(new PlayBackgroundMusicActionConverter(),
+        return Arrays.asList(new PlayAudioActionConverter(),
+                new PlayBackgroundMusicActionConverter(),
                 new StopBackgroundMusicActionConverter());
     }
 
