@@ -27,7 +27,9 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
                 .description("Background music '" + action.filename + "' triggered by the Immerse Adventure Module")
                 .urlWithType(url.toString(), AudioFileType.WAVE)
                 // Background music, so not full volume.
-                .sourceAtAllSpeakers(0.3)
+                // TODO: make a property out of default setting
+                .volume(action.volume.map(volumePercentage -> volumePercentage / 100.0).orElse(0.3))
+                .sourceAtAllSpeakers()
                 .playRepeatForever()
                 .build();
         UUID playbackID = this.getImmerse(context).playScenario(scenario);

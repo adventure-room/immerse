@@ -22,7 +22,8 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
                 .description("Audio '" + action.filename + "' triggered by the Immerse Adventure Module")
                 .urlWithType(url.toString(), AudioFileType.WAVE);
 
-        builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()), action.volume.orElse(1.0));
+        action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
+        builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()));
         action.sourceLocation.ifPresent(builder::sourceAtLocation);
 
         Scenario scenario = builder

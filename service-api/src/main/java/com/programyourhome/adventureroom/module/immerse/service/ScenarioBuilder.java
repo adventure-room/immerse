@@ -39,13 +39,20 @@ public interface ScenarioBuilder {
 
     public ScenarioBuilder urlWithType(String url, AudioFileType type);
 
+    public ScenarioBuilder volume(double volume);
+
+    // Default
+    public ScenarioBuilder fullVolume();
+
+    public ScenarioBuilder muteVolume();
+
+    public ScenarioBuilder linearVolume(double from, double to, long inMillis);
+
+    public ScenarioBuilder linearVolumeWithDelay(double from, double to, long inMillis, long delayMillis);
+
     public ScenarioBuilder sourceAtSpeaker(int speakerId);
 
-    public ScenarioBuilder sourceAtSpeaker(int speakerId, double volume);
-
     public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds);
-
-    public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds, double volume);
 
     /**
      * Set the source position to be all speakers together.
@@ -54,13 +61,11 @@ public interface ScenarioBuilder {
      */
     public ScenarioBuilder sourceAtAllSpeakers();
 
-    public ScenarioBuilder sourceAtAllSpeakers(double volume);
-
     public ScenarioBuilder sourceAtLocation(Vector3D location);
 
     // TODO: Create path builder with keyframes and possible other options like accelerate etc
     // TODO: idea: instead of just units per second, have something like a Speed that can be set
-    // wih static, dynamic speeds and human readable options like walking, running, etc. (where 1 unit is set to 1 match 1 cm or m or ?)
+    // with static, dynamic speeds and human readable options like walking, running, etc. (where 1 unit is set to 1 match 1 cm or m or ?)
     public ScenarioBuilder sourceAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop);
 
     // TODO: Create circling builder
@@ -72,6 +77,14 @@ public interface ScenarioBuilder {
      */
     public ScenarioBuilder listenerAtCenter();
 
+    // TODO: Create path builder with keyframes and possible other options like accelerate etc
+    // TODO: idea: instead of just units per second, have something like a Speed that can be set
+    // with static, dynamic speeds and human readable options like walking, running, etc. (where 1 unit is set to 1 match 1 cm or m or ?)
+    public ScenarioBuilder listenerAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop);
+
+    // TODO: Create circling builder
+    public ScenarioBuilder listenerCircling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise);
+
     /**
      * Define the volume of the audio by the direction of the source
      * relative to the listener.
@@ -82,8 +95,6 @@ public interface ScenarioBuilder {
     public ScenarioBuilder fieldOfHearingVolume(double angle);
 
     public ScenarioBuilder fixedVolumesRelative(Map<Integer, Double> relativeSpeakerVolumes);
-
-    public ScenarioBuilder fixedVolumesAbsolute(Map<Integer, Double> absoluteSpeakerVolumes);
 
     public ScenarioBuilder normalizeVolume();
 

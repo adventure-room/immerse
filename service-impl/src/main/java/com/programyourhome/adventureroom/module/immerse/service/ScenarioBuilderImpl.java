@@ -33,6 +33,8 @@ import com.programyourhome.immerse.toolbox.speakers.algorithms.normalize.Fractio
 import com.programyourhome.immerse.toolbox.speakers.algorithms.normalize.MaxSumNormalizeAlgorithm;
 import com.programyourhome.immerse.toolbox.speakers.algorithms.volumeratios.FieldOfHearingVolumeRatiosAlgorithm;
 import com.programyourhome.immerse.toolbox.speakers.algorithms.volumeratios.FixedVolumeRatiosAlgorithm;
+import com.programyourhome.immerse.toolbox.volume.dynamic.FixedDynamicVolume;
+import com.programyourhome.immerse.toolbox.volume.dynamic.LinearDynamicVolume;
 
 import one.util.streamex.StreamEx;
 
@@ -48,6 +50,7 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
                 .name("Builder Scenario")
                 .description("Scenario built by the ScenarioBuilder");
         this.immerseScenarioSettingsBuilder = ScenarioSettings.builder();
+        this.fullVolume();
         this.sourceAtAllSpeakers();
         this.listenerAtCenter();
         this.fieldOfHearingVolume();
@@ -86,36 +89,48 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     }
 
     @Override
-    public ScenarioBuilder sourceAtSpeaker(int speakerId) {
-        return this.sourceAtSpeaker(speakerId, 1);
+    public ScenarioBuilder volume(double volume) {
+        this.immerseScenarioSettingsBuilder.volume(FixedDynamicVolume.fixed(volume));
+        return this;
     }
 
     @Override
-    public ScenarioBuilder sourceAtSpeaker(int speakerId, double volume) {
-        return this.sourceAtSpeakers(Arrays.asList(speakerId), volume);
+    public ScenarioBuilder fullVolume() {
+        this.immerseScenarioSettingsBuilder.volume(FixedDynamicVolume.full());
+        return this;
+    }
+
+    @Override
+    public ScenarioBuilder muteVolume() {
+        this.immerseScenarioSettingsBuilder.volume(FixedDynamicVolume.mute());
+        return this;
+    }
+
+    @Override
+    public ScenarioBuilder linearVolume(double from, double to, long inMillis) {
+        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linear(from, to, inMillis));
+        return this;
+    }
+
+    @Override
+    public ScenarioBuilder linearVolumeWithDelay(double from, double to, long inMillis, long delayMillis) {
+        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linearWithDelay(from, to, inMillis, delayMillis));
+        return this;
+    }
+
+    @Override
+    public ScenarioBuilder sourceAtSpeaker(int speakerId) {
+        return this.sourceAtSpeakers(Arrays.asList(speakerId));
     }
 
     @Override
     public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds) {
-        return this.sourceAtSpeakers(speakerIds, 1);
-    }
-
-    @Override
-    public ScenarioBuilder sourceAtSpeakers(Collection<Integer> speakerIds, double volume) {
-        // Source location does not matter with fixed speaker volumes, so just set to the center of the room.List
-        this.immerseScenarioSettingsBuilder.sourceLocation(this.calculateCenterOfRoom());
-        // TODO: this must be replaced by a general volume setting
-        return this.fixedVolumesAbsolute(this.volumeAtSpeakers(speakerIds, volume));
+        return this.fixedVolumesRelative(this.volumeAtSpeakers(speakerIds));
     }
 
     @Override
     public ScenarioBuilder sourceAtAllSpeakers() {
-        return this.sourceAtAllSpeakers(1);
-    }
-
-    @Override
-    public ScenarioBuilder sourceAtAllSpeakers(double volume) {
-        return this.sourceAtSpeakers(this.immerseSettings.getRoom().getSpeakers().keySet(), volume);
+        return this.sourceAtSpeakers(this.immerseSettings.getRoom().getSpeakers().keySet());
     }
 
     @Override
@@ -181,15 +196,6 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     }
 
     @Override
-    public ScenarioBuilder fixedVolumesAbsolute(Map<Integer, Double> absoluteSpeakerVolumes) {
-        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FixedVolumeRatiosAlgorithm.fixed(new SpeakerVolumeRatios(absoluteSpeakerVolumes)));
-        double totalVolume = StreamEx.of(absoluteSpeakerVolumes.values()).mapToDouble(d -> d).sum();
-        // By setting the normalize algorithm to a max sum that exactly matches the total volume amount, it will not alter the absolute values given.
-        this.immerseScenarioSettingsBuilder.normalizeAlgorithm(MaxSumNormalizeAlgorithm.maxSum(totalVolume));
-        return this;
-    }
-
-    @Override
     public ScenarioBuilder normalizeVolume() {
         this.immerseScenarioSettingsBuilder.normalizeAlgorithm(FractionalNormalizeAlgorithm.fractional());
         return this;
@@ -251,9 +257,9 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
                 .sum() / speakers.size();
     }
 
-    private Map<Integer, Double> volumeAtSpeakers(Collection<Integer> speakerIds, double volume) {
+    private Map<Integer, Double> volumeAtSpeakers(Collection<Integer> speakerIds) {
         return StreamEx.of(this.immerseSettings.getRoom().getSpeakers().keySet())
-                .toMap(speakerId -> speakerId, speakerId -> speakerIds.contains(speakerId) ? volume : 0.0);
+                .toMap(speakerId -> speakerId, speakerId -> speakerIds.contains(speakerId) ? 1.0 : 0.0);
     }
 
 }
