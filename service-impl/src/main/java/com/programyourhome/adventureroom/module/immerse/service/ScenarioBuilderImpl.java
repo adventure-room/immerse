@@ -50,6 +50,7 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
                 .name("Builder Scenario")
                 .description("Scenario built by the ScenarioBuilder");
         this.immerseScenarioSettingsBuilder = ScenarioSettings.builder();
+        // TODO: move to executor? flexible 'defaults'
         this.fullVolume();
         this.sourceAtAllSpeakers();
         this.listenerAtCenter();
@@ -175,6 +176,24 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     public ScenarioBuilder listenerAtCenter() {
         this.immerseScenarioSettingsBuilder.listenerLocation(this.calculateCenterOfRoom());
         return this;
+    }
+
+    @Override
+    public ScenarioBuilder listenerAtLocation(Vector3D location) {
+        this.immerseScenarioSettingsBuilder.listenerLocation(FixedDynamicLocation.fixed(location));
+        return this;
+    }
+
+    @Override
+    public ScenarioBuilder listenerAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop) {
+        // TODO merge logic with source at path
+        return null;
+    }
+
+    @Override
+    public ScenarioBuilder listenerCircling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise) {
+        // TODO merge logic with source circling
+        return null;
     }
 
     @Override

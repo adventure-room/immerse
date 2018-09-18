@@ -1,19 +1,13 @@
 package com.programyourhome.adventureroom.module.immerse.module;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.programyourhome.adventureroom.dsl.regex.AbstractRegexDslAdventureModule;
-import com.programyourhome.adventureroom.dsl.regex.RegexActionConverter;
+import com.programyourhome.adventureroom.dsl.antlr.AbstractAntlrDslAdventureModule;
 import com.programyourhome.adventureroom.model.Adventure;
 import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.resource.ResourceDescriptor;
-import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayAudioActionConverter;
-import com.programyourhome.adventureroom.module.immerse.dsl.converters.PlayBackgroundMusicActionConverter;
-import com.programyourhome.adventureroom.module.immerse.dsl.converters.StopBackgroundMusicActionConverter;
 import com.programyourhome.adventureroom.module.immerse.model.OutputFormatExternalResource;
 import com.programyourhome.adventureroom.module.immerse.model.RoomExternalResource;
 import com.programyourhome.adventureroom.module.immerse.model.SoundCardExternalResource;
@@ -28,7 +22,7 @@ import com.programyourhome.immerse.domain.speakers.Speaker;
 
 import one.util.streamex.StreamEx;
 
-public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
+public class ImmerseAdventureModule extends AbstractAntlrDslAdventureModule {
 
     public static final String ID = "immerse";
 
@@ -37,6 +31,7 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
     private ImmerseSettings immerseSettings;
 
     public ImmerseAdventureModule() {
+        super(ID);
         this.immerse = this.loadApiImpl(Immerse.class);
         this.initConfig();
     }
@@ -130,13 +125,6 @@ public class ImmerseAdventureModule extends AbstractRegexDslAdventureModule {
     @Override
     public ImmerseConfig getConfig() {
         return this.config;
-    }
-
-    @Override
-    protected Collection<RegexActionConverter<?>> getRegexActionConverters() {
-        return Arrays.asList(new PlayAudioActionConverter(),
-                new PlayBackgroundMusicActionConverter(),
-                new StopBackgroundMusicActionConverter());
     }
 
     @Override

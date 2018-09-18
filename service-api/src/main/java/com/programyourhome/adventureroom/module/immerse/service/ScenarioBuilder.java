@@ -77,6 +77,8 @@ public interface ScenarioBuilder {
      */
     public ScenarioBuilder listenerAtCenter();
 
+    public ScenarioBuilder listenerAtLocation(Vector3D location);
+
     // TODO: Create path builder with keyframes and possible other options like accelerate etc
     // TODO: idea: instead of just units per second, have something like a Speed that can be set
     // with static, dynamic speeds and human readable options like walking, running, etc. (where 1 unit is set to 1 match 1 cm or m or ?)

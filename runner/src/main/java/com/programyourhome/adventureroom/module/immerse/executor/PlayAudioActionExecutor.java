@@ -23,8 +23,15 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
                 .urlWithType(url.toString(), AudioFileType.WAVE);
 
         action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
-        builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()));
-        action.sourceLocation.ifPresent(builder::sourceAtLocation);
+
+        // TODO: etc etc etc
+        action.listenerLocation.ifPresent(listenerLocation -> {
+            listenerLocation.getStaticLocation().ifPresent(builder::listenerAtLocation);
+            listenerLocation.getPath().ifPresent(path -> builder.listenerAtPath(path.waypoints, path.speed, true));
+        });
+
+        // builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()));
+        // action.sourceLocation.ifPresent(builder::sourceAtLocation);
 
         Scenario scenario = builder
                 .playOnce()
