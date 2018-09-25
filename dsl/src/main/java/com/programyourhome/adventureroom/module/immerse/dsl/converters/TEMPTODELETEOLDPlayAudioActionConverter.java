@@ -10,6 +10,17 @@ public class TEMPTODELETEOLDPlayAudioActionConverter {
     private static final String ONCE = "once";
     private static final String FOREVER = "forever";
 
+    // public static final RegexVariable SPEAKER_ID = RegexActionConverter.RESOURCE_ID.withName("speakerId");
+    // public static final RegexVariable SPEAKER_IDS = RegexActionConverter.RESOURCE_IDS.withName("speakerIds");
+    // public static final RegexVariable VOLUME = INTEGER.withName("volume");
+    // public static final RegexVariable SOURCE_STATIC_LOCATION = RegexActionConverter.LOCATION.withName("sourceStaticLocation");
+    // public static final RegexVariable SOURCE_LOCATION_PATH = RegexActionConverter.LOCATION_PATH.withName("sourceLocationPath");
+    // public static final RegexVariable LISTENER_STATIC_LOCATION = RegexActionConverter.LOCATION.withName("listenerStaticLocation");
+    // public static final RegexVariable LISTENER_LOCATION_PATH = RegexActionConverter.LOCATION_PATH.withName("listenerLocationPath");
+    // public static final RegexVariable SOURCE_PATH_SPEED = DOUBLE.withName("sourcePathSpeed");
+    // public static final RegexVariable LISTENER_PATH_SPEED = DOUBLE.withName("listenerPathSpeed");
+    // public static final RegexVariable REPEAT = INTEGER.withName("repeat");
+
     // @Override
     // public Map<String, String> getRegexMap() {
     // String playContent = "play " + FILENAME;

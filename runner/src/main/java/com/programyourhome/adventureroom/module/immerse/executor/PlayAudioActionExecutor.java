@@ -25,10 +25,12 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
         action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
 
         // TODO: etc etc etc
-        action.listenerLocation.ifPresent(listenerLocation -> {
-            listenerLocation.getStaticLocation().ifPresent(builder::listenerAtLocation);
-            listenerLocation.getPath().ifPresent(path -> builder.listenerAtPath(path.waypoints, path.speed, true));
-        });
+        // TODO: extract source and listener locations -> field of hearing
+        // action.listenerLocation.ifPresent(listenerLocation -> {
+        // listenerLocation.getStaticLocation().ifPresent(builder::listenerAtLocation);
+        // listenerLocation.getPath().ifPresent(path -> builder.listenerAtPath(path.waypoints, path.speed, true));
+        // // TODO: circling
+        // });
 
         // builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()));
         // action.sourceLocation.ifPresent(builder::sourceAtLocation);

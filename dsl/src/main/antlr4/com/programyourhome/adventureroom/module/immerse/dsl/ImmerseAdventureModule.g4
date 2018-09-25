@@ -1,12 +1,19 @@
 grammar ImmerseAdventureModule;
 
-action: playAudioAction;
+action: playAudioAction | playBackgroundMusicAction | stopBackgroundMusicAction;
 
-playAudioAction: resourceSection volumeSection;
+playAudioAction: resourceSection volumeSection?;
 
 resourceSection: 'play ' filename=FILENAME;
 
-volumeSection: ' at ' volume=INTEGER;
+volumeSection: ' at volume ' volume=INTEGER;
+
+
+playBackgroundMusicAction: backgroundResourceSection volumeSection?;
+
+backgroundResourceSection: 'play background music ' filename=FILENAME;
+
+stopBackgroundMusicAction: 'stop background music';
 
 // TODO: Use fragments for number, word, etc
 

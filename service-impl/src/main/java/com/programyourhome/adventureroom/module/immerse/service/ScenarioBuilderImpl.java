@@ -53,8 +53,6 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
         // TODO: move to executor? flexible 'defaults'
         this.fullVolume();
         this.sourceAtAllSpeakers();
-        this.listenerAtCenter();
-        this.fieldOfHearingVolume();
         this.volumeAsOneSpeaker();
         this.playOnce();
     }
@@ -135,14 +133,13 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     }
 
     @Override
-    public ScenarioBuilder sourceAtLocation(Vector3D location) {
-        this.immerseScenarioSettingsBuilder.sourceLocation(FixedDynamicLocation.fixed(location));
-        return this.fieldOfHearingVolume();
+    public Factory<DynamicLocation> atLocation(Vector3D location) {
+        return FixedDynamicLocation.fixed(location);
     }
 
-    @Override
     // TODO: unit test this!
-    public ScenarioBuilder sourceAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop) {
+    @Override
+    public Factory<DynamicLocation> atPath(List<Vector3D> path, double unitsPerSecond, boolean loop) {
         if (path.isEmpty()) {
             throw new IllegalArgumentException("path cannot be empty");
         }
@@ -157,54 +154,32 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
             travelTimeSoFar += travelTimeInMillis;
             keyFrames.put(Math.round(travelTimeSoFar), nextPoint);
         }
-        this.immerseScenarioSettingsBuilder.sourceLocation(KeyFramesDynamicLocation.keyFrames(keyFrames, loop));
-        return this;
+        return KeyFramesDynamicLocation.keyFrames(keyFrames, loop);
     }
 
-    @Override
     // TODO: unit test
-    public ScenarioBuilder sourceCircling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise) {
+    @Override
+    public Factory<DynamicLocation> circling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise) {
         double circumference = 2 * Math.PI * radius;
         double milliesForCircumference = circumference / unitsPerSecond / 1000;
         double millisPerDegreeAngle = milliesForCircumference / 360;
-        this.immerseScenarioSettingsBuilder
-                .sourceLocation(HorizontalCircleDynamicLocation.horizontalCircle(center, startAngle, radius, clockwise, millisPerDegreeAngle));
+        return HorizontalCircleDynamicLocation.horizontalCircle(center, startAngle, radius, clockwise, millisPerDegreeAngle);
+    }
+
+    @Override
+    public Factory<DynamicLocation> atCenter() {
+        return this.calculateCenterOfRoom();
+    }
+
+    @Override
+    public ScenarioBuilder fieldOfHearingVolume(Factory<DynamicLocation> sourceLocation, Factory<DynamicLocation> listenerLocation) {
+        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(sourceLocation, listenerLocation));
         return this;
     }
 
     @Override
-    public ScenarioBuilder listenerAtCenter() {
-        this.immerseScenarioSettingsBuilder.listenerLocation(this.calculateCenterOfRoom());
-        return this;
-    }
-
-    @Override
-    public ScenarioBuilder listenerAtLocation(Vector3D location) {
-        this.immerseScenarioSettingsBuilder.listenerLocation(FixedDynamicLocation.fixed(location));
-        return this;
-    }
-
-    @Override
-    public ScenarioBuilder listenerAtPath(List<Vector3D> path, double unitsPerSecond, boolean loop) {
-        // TODO merge logic with source at path
-        return null;
-    }
-
-    @Override
-    public ScenarioBuilder listenerCircling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise) {
-        // TODO merge logic with source circling
-        return null;
-    }
-
-    @Override
-    public ScenarioBuilder fieldOfHearingVolume() {
-        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing());
-        return this;
-    }
-
-    @Override
-    public ScenarioBuilder fieldOfHearingVolume(double angle) {
-        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(angle));
+    public ScenarioBuilder fieldOfHearingVolume(Factory<DynamicLocation> sourceLocation, Factory<DynamicLocation> listenerLocation, double angle) {
+        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(sourceLocation, listenerLocation, angle));
         return this;
     }
 

@@ -31,7 +31,7 @@ public class ImmerseAdventureModule extends AbstractAntlrDslAdventureModule {
     private ImmerseSettings immerseSettings;
 
     public ImmerseAdventureModule() {
-        super(ID);
+        super("Immerse");
         this.immerse = this.loadApiImpl(Immerse.class);
         this.initConfig();
     }
