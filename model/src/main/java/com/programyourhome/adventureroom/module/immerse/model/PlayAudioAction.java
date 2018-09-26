@@ -70,12 +70,12 @@ public class PlayAudioAction implements Action {
         }
     }
 
-    public class Path {
+    public static class Path {
         public List<Vector3D> waypoints;
         public double speed;
     }
 
-    public class Circling {
+    public static class Circling {
         public Vector3D center;
         public double radius;
         public Optional<Double> startAngle = Optional.empty();
