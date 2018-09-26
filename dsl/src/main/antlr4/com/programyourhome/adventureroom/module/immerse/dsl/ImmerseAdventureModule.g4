@@ -2,7 +2,8 @@ grammar ImmerseAdventureModule;
 
 action: playAudioAction | playBackgroundMusicAction | stopBackgroundMusicAction;
 
-playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection?;
+playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection?
+                 normalizeSection? playbackSection?;
 
 resourceSection: 'play ' filename=FILENAME;
 
@@ -18,15 +19,21 @@ allSpeakers: ' at all speakers';
 
 sourceLocationSection: locationSection;
 
-listenerLocationSection: locationSection;
+listenerLocationSection: ' with listener' locationSection;
 
 locationSection: fixedLocation | pathLocation | circlingLocation;
 
 fixedLocation: ' at location ' location=VECTOR_3D;
 
-pathLocation: ' moving on path ' path=PATH (' at speed ' speed=INTEGER)?;
+pathLocation: ' moving on path ' path=PATH (' with speed ' speed=DOUBLE)?;
 
-circlingLocation: 'none';
+circlingLocation: ' circling' (clockwise=' clockwise' | antiClockwise=' anti-clockwise')? ' around ' center=VECTOR_3D ' with radius ' radius=DOUBLE
+                  (' starting at angle ' startAngle=DOUBLE)? ' with speed ' speed=DOUBLE;
+
+normalizeSection: asOneSpeaker=' as one speaker' | asAllSpeakers=' as all speakers';
+
+// TODO: time should be more flexible
+playbackSection: once=' once' | ' repeat ' repeat=INTEGER ' times' | forever=' repeat forever' | ' for ' seconds=INTEGER ' seconds';
 
 playBackgroundMusicAction: backgroundResourceSection volumeSection?;
 
@@ -40,10 +47,10 @@ INTEGER: [0-9]+;
 
 INTEGER_LIST: [0-9]+ (',' [0-9]+)*;
 
-DOUBLE: [0-9]+ ('.' [0-9]+)?;
+DOUBLE: [0-9]+ '.' [0-9]+;
 
 FILENAME: [A-Za-z0-9]+ '.' [A-Za-z0-9]+;
 
-VECTOR_3D: [0-9]+ ',' [0-9]+ ',' [0-9]+;
+VECTOR_3D: '(' [0-9]+ ',' [0-9]+ ',' [0-9]+ ')';
 
-PATH: VECTOR_3D (';' VECTOR_3D)*;
+PATH: '(' [0-9]+ ',' [0-9]+ ',' [0-9]+ ')' (';' '(' [0-9]+ ',' [0-9]+ ',' [0-9]+ ')')*;

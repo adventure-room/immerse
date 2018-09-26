@@ -10,20 +10,26 @@ import org.antlr.v4.runtime.Token;
 import com.programyourhome.adventureroom.dsl.antlr.AbstractReflectiveParseTreeAntlrActionConverter;
 import com.programyourhome.adventureroom.model.util.StreamUtil;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.AllSpeakersContext;
+import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.CirclingLocationContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.FixedLocationContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.ListenerLocationSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.LocationSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.MultipleSpeakersContext;
+import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.NormalizeSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.PathLocationContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.PlayAudioActionContext;
+import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.PlaybackSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.ResourceSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SingleSpeakerContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceLocationSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceSpeakerSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.VolumeSectionContext;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Circling;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.DynamicLocation;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Normalize;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Path;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Playback;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.SoundSource;
 import com.programyourhome.adventureroom.module.immerse.model.SpeakerExternalResource;
 import com.programyourhome.immerse.domain.location.Vector3D;
@@ -38,7 +44,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseVolumeSection(VolumeSectionContext context, PlayAudioAction action) {
-        action.volume = this.toOptionalInt(context.volume);
+        action.volume = Optional.of(this.toInt(context.volume));
     }
 
     public void parseSourceSpeakerSection(SourceSpeakerSectionContext context, PlayAudioAction action) {
@@ -73,7 +79,8 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     private DynamicLocation parseListenerSection(LocationSectionContext context, PlayAudioAction action) {
         return StreamEx.of(
                 Optional.ofNullable(context.fixedLocation()).map(this::parseFixedLocation),
-                Optional.ofNullable(context.pathLocation()).map(this::parsePathLocation))
+                Optional.ofNullable(context.pathLocation()).map(this::parsePathLocation),
+                Optional.ofNullable(context.circlingLocation()).map(this::parseCirclingLocation))
                 .flatMap(StreamUtil::optionalToStream)
                 .findFirst().get();
     }
@@ -90,13 +97,46 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
         return DynamicLocation.path(path);
     }
 
+    private DynamicLocation parseCirclingLocation(CirclingLocationContext context) {
+        Circling circling = new Circling();
+        circling.clockwise = StreamEx.of(
+                Optional.ofNullable(context.clockwise).map(c -> true),
+                Optional.ofNullable(context.antiClockwise).map(ac -> false))
+                .flatMap(StreamUtil::optionalToStream)
+                .findFirst();
+        circling.center = this.parseVector3D(context.center);
+        circling.radius = this.toDouble(context.radius);
+        circling.startAngle = this.toOptionalDouble(context.startAngle);
+        circling.speed = this.toDouble(context.speed);
+        return DynamicLocation.circling(circling);
+    }
+
     private Vector3D parseVector3D(Token location) {
         return this.parseVector3D(location.getText());
     }
 
     private Vector3D parseVector3D(String location) {
-        List<Double> coordinates = StreamEx.of(location.split(",")).map(Double::parseDouble).toList();
+        String strippedLocation = location.replaceAll("\\(", "").replaceAll("\\)", "");
+        List<Double> coordinates = StreamEx.of(strippedLocation.split(",")).map(Double::parseDouble).toList();
         return new Vector3D(coordinates);
+    }
+
+    public void parsePlaybackSection(PlaybackSectionContext context, PlayAudioAction action) {
+        action.playback = Optional.of(StreamEx.of(
+                Optional.ofNullable(context.once).map(once -> Playback.once()),
+                Optional.ofNullable(context.repeat).map(repeat -> Playback.repeat(this.toInt(repeat))),
+                Optional.ofNullable(context.forever).map(repeat -> Playback.forever()),
+                Optional.ofNullable(context.seconds).map(seconds -> Playback.seconds(this.toInt(seconds))))
+                .flatMap(StreamUtil::optionalToStream)
+                .findFirst().get());
+    }
+
+    public void parseNormalizeSection(NormalizeSectionContext context, PlayAudioAction action) {
+        action.normalize = Optional.of(StreamEx.of(
+                Optional.ofNullable(context.asOneSpeaker).map(one -> Normalize.asOneSpeaker()),
+                Optional.ofNullable(context.asAllSpeakers).map(all -> Normalize.asAllSpeakers()))
+                .flatMap(StreamUtil::optionalToStream)
+                .findFirst().get());
     }
 
 }

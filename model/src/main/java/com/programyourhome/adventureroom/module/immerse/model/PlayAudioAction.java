@@ -107,19 +107,23 @@ public class PlayAudioAction implements Action {
 
     public static class Playback extends Either {
         public static Playback once() {
-            return new Playback(Optional.of(Yes.Y), Optional.empty(), Optional.empty());
+            return new Playback(Optional.of(Yes.Y), Optional.empty(), Optional.empty(), Optional.empty());
         }
 
         public static Playback repeat(int times) {
-            return new Playback(Optional.empty(), Optional.of(times), Optional.empty());
+            return new Playback(Optional.empty(), Optional.of(times), Optional.empty(), Optional.empty());
         }
 
         public static Playback forever() {
-            return new Playback(Optional.empty(), Optional.empty(), Optional.of(Yes.Y));
+            return new Playback(Optional.empty(), Optional.empty(), Optional.of(Yes.Y), Optional.empty());
         }
 
-        public Playback(Optional<Yes> once, Optional<Integer> repeat, Optional<Yes> forever) {
-            super(once, repeat, forever);
+        public static Playback seconds(int seconds) {
+            return new Playback(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(seconds));
+        }
+
+        public Playback(Optional<Yes> once, Optional<Integer> repeat, Optional<Yes> forever, Optional<Integer> seconds) {
+            super(once, repeat, forever, seconds);
         }
 
         public Optional<Yes> getOnce() {
@@ -132,6 +136,10 @@ public class PlayAudioAction implements Action {
 
         public Optional<Yes> getForever() {
             return this.getItem(3);
+        }
+
+        public Optional<Integer> getSeconds() {
+            return this.getItem(4);
         }
 
     }
