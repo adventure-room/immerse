@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.antlr.v4.runtime.Token;
 
 import com.programyourhome.adventureroom.dsl.antlr.AbstractReflectiveParseTreeAntlrActionConverter;
-import com.programyourhome.adventureroom.model.util.StreamUtil;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.AllSpeakersContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.CirclingLocationContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.FixedLocationContext;
@@ -48,12 +47,10 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseSourceSpeakerSection(SourceSpeakerSectionContext context, PlayAudioAction action) {
-        action.soundSource = Optional.of(SoundSource.speakerIds(StreamEx.of(
-                Optional.ofNullable(context.singleSpeaker()).map(this::parseSingleSpeaker),
-                Optional.ofNullable(context.multipleSpeakers()).map(this::parseMultipleSpeakers),
-                Optional.ofNullable(context.allSpeakers()).map(this::parseAllSpeakers))
-                .flatMap(StreamUtil::optionalToStream)
-                .findFirst().get()));
+        action.soundSource = Optional.of(SoundSource.speakerIds(this.getOne(
+                this.parse(context.singleSpeaker(), this::parseSingleSpeaker),
+                this.parse(context.multipleSpeakers(), this::parseMultipleSpeakers),
+                this.parse(context.allSpeakers(), this::parseAllSpeakers))));
     }
 
     private Collection<Integer> parseSingleSpeaker(SingleSpeakerContext context) {
@@ -77,12 +74,10 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     private DynamicLocation parseListenerSection(LocationSectionContext context, PlayAudioAction action) {
-        return StreamEx.of(
-                Optional.ofNullable(context.fixedLocation()).map(this::parseFixedLocation),
-                Optional.ofNullable(context.pathLocation()).map(this::parsePathLocation),
-                Optional.ofNullable(context.circlingLocation()).map(this::parseCirclingLocation))
-                .flatMap(StreamUtil::optionalToStream)
-                .findFirst().get();
+        return this.getOne(
+                this.parse(context.fixedLocation(), this::parseFixedLocation),
+                this.parse(context.pathLocation(), this::parsePathLocation),
+                this.parse(context.circlingLocation(), this::parseCirclingLocation));
     }
 
     private DynamicLocation parseFixedLocation(FixedLocationContext context) {
@@ -99,11 +94,9 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
 
     private DynamicLocation parseCirclingLocation(CirclingLocationContext context) {
         Circling circling = new Circling();
-        circling.clockwise = StreamEx.of(
-                Optional.ofNullable(context.clockwise).map(c -> true),
-                Optional.ofNullable(context.antiClockwise).map(ac -> false))
-                .flatMap(StreamUtil::optionalToStream)
-                .findFirst();
+        circling.clockwise = this.maybeOne(
+                this.parse(context.clockwise, c -> true),
+                this.parse(context.antiClockwise, ac -> false));
         circling.center = this.parseVector3D(context.center);
         circling.radius = this.toDouble(context.radius);
         circling.startAngle = this.toOptionalDouble(context.startAngle);
@@ -122,21 +115,17 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parsePlaybackSection(PlaybackSectionContext context, PlayAudioAction action) {
-        action.playback = Optional.of(StreamEx.of(
-                Optional.ofNullable(context.once).map(once -> Playback.once()),
-                Optional.ofNullable(context.repeat).map(repeat -> Playback.repeat(this.toInt(repeat))),
-                Optional.ofNullable(context.forever).map(repeat -> Playback.forever()),
-                Optional.ofNullable(context.seconds).map(seconds -> Playback.seconds(this.toInt(seconds))))
-                .flatMap(StreamUtil::optionalToStream)
-                .findFirst().get());
+        action.playback = this.getOneAsOptional(
+                this.parse(context.once, once -> Playback.once()),
+                this.parse(context.repeat, times -> Playback.repeat(this.toInt(times))),
+                this.parse(context.forever, forever -> Playback.forever()),
+                this.parse(context.seconds, seconds -> Playback.seconds(this.toInt(seconds))));
     }
 
     public void parseNormalizeSection(NormalizeSectionContext context, PlayAudioAction action) {
-        action.normalize = Optional.of(StreamEx.of(
-                Optional.ofNullable(context.asOneSpeaker).map(one -> Normalize.asOneSpeaker()),
-                Optional.ofNullable(context.asAllSpeakers).map(all -> Normalize.asAllSpeakers()))
-                .flatMap(StreamUtil::optionalToStream)
-                .findFirst().get());
+        action.normalize = this.getOneAsOptional(
+                this.parse(context.asOneSpeaker, one -> Normalize.asOneSpeaker()),
+                this.parse(context.asAllSpeakers, all -> Normalize.asAllSpeakers()));
     }
 
 }
