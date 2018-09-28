@@ -50,10 +50,9 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
                 .name("Builder Scenario")
                 .description("Scenario built by the ScenarioBuilder");
         this.immerseScenarioSettingsBuilder = ScenarioSettings.builder();
-        // TODO: move to executor? flexible 'defaults'
         this.fullVolume();
         this.sourceAtAllSpeakers();
-        this.volumeAsOneSpeaker();
+        this.normalizeVolume();
         this.playOnce();
     }
 
@@ -150,7 +149,7 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
             Vector3D previousPoint = path.get(i - 1);
             Vector3D nextPoint = path.get(i);
             double distance = previousPoint.toLa4j().subtract(nextPoint.toLa4j()).fold(Vectors.mkEuclideanNormAccumulator());
-            double travelTimeInMillis = distance / unitsPerSecond / 1000;
+            double travelTimeInMillis = distance / unitsPerSecond * 1000;
             travelTimeSoFar += travelTimeInMillis;
             keyFrames.put(Math.round(travelTimeSoFar), nextPoint);
         }

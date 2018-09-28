@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.antlr.v4.runtime.Token;
 
 import com.programyourhome.adventureroom.dsl.antlr.AbstractReflectiveParseTreeAntlrActionConverter;
+import com.programyourhome.adventureroom.model.util.StreamUtil;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.AllSpeakersContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.CirclingLocationContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.FixedLocationContext;
@@ -47,7 +48,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseSourceSpeakerSection(SourceSpeakerSectionContext context, PlayAudioAction action) {
-        action.soundSource = Optional.of(SoundSource.speakerIds(this.getOne(
+        action.soundSource = Optional.of(SoundSource.speakerIds(StreamUtil.getOne(
                 this.parse(context.singleSpeaker(), this::parseSingleSpeaker),
                 this.parse(context.multipleSpeakers(), this::parseMultipleSpeakers),
                 this.parse(context.allSpeakers(), this::parseAllSpeakers))));
@@ -74,7 +75,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     private DynamicLocation parseListenerSection(LocationSectionContext context, PlayAudioAction action) {
-        return this.getOne(
+        return StreamUtil.getOne(
                 this.parse(context.fixedLocation(), this::parseFixedLocation),
                 this.parse(context.pathLocation(), this::parsePathLocation),
                 this.parse(context.circlingLocation(), this::parseCirclingLocation));
@@ -94,7 +95,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
 
     private DynamicLocation parseCirclingLocation(CirclingLocationContext context) {
         Circling circling = new Circling();
-        circling.clockwise = this.maybeOne(
+        circling.clockwise = StreamUtil.maybeOne(
                 this.parse(context.clockwise, c -> true),
                 this.parse(context.antiClockwise, ac -> false));
         circling.center = this.parseVector3D(context.center);
@@ -115,7 +116,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parsePlaybackSection(PlaybackSectionContext context, PlayAudioAction action) {
-        action.playback = this.getOneAsOptional(
+        action.playback = StreamUtil.getOneAsOptional(
                 this.parse(context.once, once -> Playback.once()),
                 this.parse(context.repeat, times -> Playback.repeat(this.toInt(times))),
                 this.parse(context.forever, forever -> Playback.forever()),
@@ -123,7 +124,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseNormalizeSection(NormalizeSectionContext context, PlayAudioAction action) {
-        action.normalize = this.getOneAsOptional(
+        action.normalize = StreamUtil.getOneAsOptional(
                 this.parse(context.asOneSpeaker, one -> Normalize.asOneSpeaker()),
                 this.parse(context.asAllSpeakers, all -> Normalize.asAllSpeakers()));
     }

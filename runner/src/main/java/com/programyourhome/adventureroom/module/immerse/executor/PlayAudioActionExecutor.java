@@ -1,15 +1,19 @@
 package com.programyourhome.adventureroom.module.immerse.executor;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.UUID;
 
 import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.toolbox.ContentCategory;
 import com.programyourhome.adventureroom.model.toolbox.DataStream;
+import com.programyourhome.adventureroom.model.util.StreamUtil;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction;
 import com.programyourhome.adventureroom.module.immerse.service.ScenarioBuilder;
+import com.programyourhome.immerse.domain.Factory;
 import com.programyourhome.immerse.domain.Scenario;
 import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
+import com.programyourhome.immerse.domain.location.dynamic.DynamicLocation;
 
 public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAction> {
 
@@ -18,28 +22,48 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
         DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, action.filename);
         URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
         ScenarioBuilder builder = this.getImmerse(context).scenarioBuilder()
-                .name("Audio")
+                .name(action.filename)
                 .description("Audio '" + action.filename + "' triggered by the Immerse Adventure Module")
                 .urlWithType(url.toString(), AudioFileType.WAVE);
 
         action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
 
-        // TODO: etc etc etc
-        // TODO: extract source and listener locations -> field of hearing
-        // action.listenerLocation.ifPresent(listenerLocation -> {
-        // listenerLocation.getStaticLocation().ifPresent(builder::listenerAtLocation);
-        // listenerLocation.getPath().ifPresent(path -> builder.listenerAtPath(path.waypoints, path.speed, true));
-        // // TODO: circling
-        // });
+        action.soundSource.ifPresent(soundSource -> {
+            soundSource.getSpeakerIds().ifPresent(builder::sourceAtSpeakers);
+            soundSource.getDynamicLocation().ifPresent(sourceDynamicLocation -> {
+                Factory<DynamicLocation> sourceLocation = this.toImmerseDynamicLocation(sourceDynamicLocation, builder);
+                Factory<DynamicLocation> listenerLocation = action.listenerLocation
+                        .map(listenerDynamicLocation -> this.toImmerseDynamicLocation(listenerDynamicLocation, builder))
+                        .orElse(builder.atCenter());
+                builder.fieldOfHearingVolume(sourceLocation, listenerLocation);
+                builder.volumeAsOneSpeaker();
+            });
+        });
 
-        // builder.sourceAtSpeakers(action.speakerIds.orElse(this.getImmerse(context).getSettings().getRoom().getSpeakers().keySet()));
-        // action.sourceLocation.ifPresent(builder::sourceAtLocation);
+        action.normalize.ifPresent(normalize -> {
+            normalize.getAsOneSpeaker().ifPresent(one -> builder.volumeAsOneSpeaker());
+            normalize.getAsAllSpeakers().ifPresent(all -> builder.normalizeVolume());
+        });
 
-        Scenario scenario = builder
-                .playOnce()
-                .build();
+        action.playback.ifPresent(playback -> {
+            playback.getOnce().ifPresent(once -> builder.playOnce());
+            playback.getRepeat().ifPresent(repeat -> builder.playRepeat(repeat));
+            playback.getForever().ifPresent(forever -> builder.playRepeatForever());
+            playback.getSeconds().ifPresent(seconds -> builder.playForDuration(Duration.ofSeconds(seconds)));
+        });
+
+        Scenario scenario = builder.build();
         UUID playbackID = this.getImmerse(context).playScenario(scenario);
         this.getImmerse(context).waitForPlayback(playbackID);
+    }
+
+    private Factory<DynamicLocation> toImmerseDynamicLocation(
+            com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.DynamicLocation dynamicLocation, ScenarioBuilder builder) {
+        return StreamUtil.getOne(
+                dynamicLocation.getStaticLocation().map(builder::atLocation),
+                dynamicLocation.getPath().map(path -> builder.atPath(path.waypoints, path.speed, false)),
+                dynamicLocation.getCircling().map(circling -> builder.circling(circling.center, circling.startAngle.orElse(0D), circling.radius,
+                        circling.speed, circling.clockwise.orElse(true))));
     }
 
 }
