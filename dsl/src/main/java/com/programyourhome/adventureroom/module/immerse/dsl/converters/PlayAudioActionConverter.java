@@ -23,6 +23,7 @@ import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModu
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SingleSpeakerContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceLocationSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceSpeakerSectionContext;
+import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.UrlResourceContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.VolumeSectionContext;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Circling;
@@ -30,8 +31,15 @@ import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Dy
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Normalize;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Path;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Playback;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Resource;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.SoundSource;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.UrlResource;
 import com.programyourhome.adventureroom.module.immerse.model.SpeakerExternalResource;
+import com.programyourhome.immerse.domain.format.ByteOrder;
+import com.programyourhome.immerse.domain.format.ImmerseAudioFormat;
+import com.programyourhome.immerse.domain.format.RecordingMode;
+import com.programyourhome.immerse.domain.format.SampleRate;
+import com.programyourhome.immerse.domain.format.SampleSize;
 import com.programyourhome.immerse.domain.location.Vector3D;
 import com.programyourhome.immerse.domain.speakers.Speaker;
 
@@ -40,7 +48,25 @@ import one.util.streamex.StreamEx;
 public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrActionConverter<PlayAudioActionContext, PlayAudioAction> {
 
     public void parseResourceSection(ResourceSectionContext context, PlayAudioAction action) {
-        action.filename = this.toString(context.filename);
+        action.resource = StreamUtil.getOne(
+                this.parse(context.fileResource(), fileContext -> Resource.file(this.toString(fileContext.filename))),
+                this.parse(context.urlResource(), this::parseUrlResource));
+    }
+
+    private Resource parseUrlResource(UrlResourceContext context) {
+        UrlResource urlResource = new UrlResource();
+        urlResource.urlString = this.toString(context.urlString);
+        if (context.format != null) {
+            // TODO: test this
+            urlResource.audioFormat = Optional.of(ImmerseAudioFormat.builder()
+                    .recordingMode(context.stereo != null ? RecordingMode.STEREO : RecordingMode.MONO)
+                    .sampleRate(SampleRate.valueOf("RATE_" + this.toString(context.sampleRate)))
+                    .sampleSize(context.oneByte != null ? SampleSize.ONE_BYTE : SampleSize.TWO_BYTES)
+                    .setSigned(context.signed != null ? true : false)
+                    .byteOrder(context.littleEndian != null ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN)
+                    .buildForInput());
+        }
+        return Resource.url(urlResource);
     }
 
     public void parseVolumeSection(VolumeSectionContext context, PlayAudioAction action) {

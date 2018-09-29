@@ -19,12 +19,26 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
 
     @Override
     public void execute(PlayAudioAction action, ExecutionContext context) {
-        DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, action.filename);
-        URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
         ScenarioBuilder builder = this.getImmerse(context).scenarioBuilder()
-                .name(action.filename)
-                .description("Audio '" + action.filename + "' triggered by the Immerse Adventure Module")
-                .urlWithType(url.toString(), AudioFileType.WAVE);
+                .name(action.resource.toString())
+                .description("Audio '" + action.resource.toString() + "' triggered by the Immerse Adventure Module");
+
+        action.resource.getFilename().ifPresent(filename -> {
+            DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, filename);
+            URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
+            // TODO: for now hardcoded wav for all files
+            builder.urlWithType(url.toString(), AudioFileType.WAVE);
+        });
+
+        action.resource.getUrl().ifPresent(urlResource -> {
+            // TODO: can this isPresent/get be avoided?
+            if (urlResource.audioFormat.isPresent()) {
+                builder.urlWithFormat(urlResource.urlString, urlResource.audioFormat.get());
+            } else {
+                // TODO: for now hardcoded wav for all url's without format
+                builder.urlWithType(urlResource.urlString, AudioFileType.WAVE);
+            }
+        });
 
         action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
 

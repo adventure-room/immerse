@@ -7,16 +7,49 @@ import java.util.Optional;
 import com.programyourhome.adventureroom.model.either.Either;
 import com.programyourhome.adventureroom.model.either.Yes;
 import com.programyourhome.adventureroom.model.script.action.Action;
+import com.programyourhome.immerse.domain.format.ImmerseAudioFormat;
 import com.programyourhome.immerse.domain.location.Vector3D;
 
 public class PlayAudioAction implements Action {
 
-    public String filename;
+    public Resource resource;
     public Optional<Integer> volume = Optional.empty();
     public Optional<SoundSource> soundSource = Optional.empty();
     public Optional<DynamicLocation> listenerLocation = Optional.empty();
     public Optional<Normalize> normalize = Optional.empty();
     public Optional<Playback> playback = Optional.empty();
+
+    public static class Resource extends Either {
+        public static Resource file(String filename) {
+            return new Resource(Optional.of(filename), Optional.empty());
+        }
+
+        public static Resource url(UrlResource urlResource) {
+            return new Resource(Optional.empty(), Optional.of(urlResource));
+        }
+
+        public Resource(Optional<String> filename, Optional<UrlResource> url) {
+            super(filename, url);
+        }
+
+        public Optional<String> getFilename() {
+            return this.getItem(1);
+        }
+
+        public Optional<UrlResource> getUrl() {
+            return this.getItem(2);
+        }
+
+        @Override
+        public String toString() {
+            return this.getFilename().orElse("") + this.getUrl().map(urlResource -> urlResource.urlString).orElse("");
+        }
+    }
+
+    public static class UrlResource {
+        public String urlString;
+        public Optional<ImmerseAudioFormat> audioFormat = Optional.empty();
+    }
 
     public static class SoundSource extends Either {
         public static SoundSource speakerIds(Collection<Integer> speakerIds) {
