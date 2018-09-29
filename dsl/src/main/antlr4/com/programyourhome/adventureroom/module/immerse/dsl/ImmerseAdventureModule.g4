@@ -16,7 +16,7 @@ sourceSpeakerSection: singleSpeaker | multipleSpeakers | allSpeakers;
 
 singleSpeaker: ' at speaker ' speakerId=INTEGER;
 
-multipleSpeakers: ' at speakers ' speakerIds=INTEGER_LIST;
+multipleSpeakers: ' at speakers ' speakerIds=(INTEGER|INTEGER_LIST);
 
 allSpeakers: ' at all speakers';
 
@@ -28,10 +28,10 @@ locationSection: fixedLocation | pathLocation | circlingLocation;
 
 fixedLocation: ' at location ' location=VECTOR_3D;
 
-pathLocation: ' moving on path ' path=PATH (' with speed ' speed=DOUBLE)?;
+pathLocation: ' moving on path ' path=(VECTOR_3D|PATH) (' with speed ' speed=(INTEGER|DOUBLE))?;
 
-circlingLocation: ' circling' (clockwise=' clockwise' | antiClockwise=' anti-clockwise')? ' around ' center=VECTOR_3D ' with radius ' radius=DOUBLE
-                  (' starting at angle ' startAngle=DOUBLE)? ' with speed ' speed=DOUBLE;
+circlingLocation: ' circling' (clockwise=' clockwise' | antiClockwise=' anti-clockwise')? ' around ' center=VECTOR_3D ' with radius ' radius=(INTEGER|DOUBLE)
+                  (' starting at angle ' startAngle=(INTEGER|DOUBLE))? ' with speed ' speed=(INTEGER|DOUBLE);
 
 normalizeSection: asOneSpeaker=' as one speaker' | asAllSpeakers=' as all speakers';
 
@@ -52,7 +52,7 @@ INTEGER_LIST: [0-9]+ (',' [0-9]+)*;
 
 DOUBLE: [0-9]+ '.' [0-9]+;
 
-FILENAME: [A-Za-z0-9]+ '.' [A-Za-z0-9]+;
+FILENAME: [A-Za-z] [A-Za-z0-9\\.]*;
 
 URL: 'http' 's'? '://' [^ ]+;
 
