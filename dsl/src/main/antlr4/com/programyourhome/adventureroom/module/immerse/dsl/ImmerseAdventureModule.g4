@@ -2,10 +2,13 @@ grammar ImmerseAdventureModule;
 
 action: playAudioAction | playBackgroundMusicAction | stopBackgroundMusicAction;
 
-playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection?
-                 normalizeSection? playbackSection?;
+playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection? normalizeSection? playbackSection?;
 
-resourceSection: 'play ' filename=FILENAME;
+resourceSection: fileResource | urlResource;
+
+fileResource: 'play ' filename=FILENAME;
+
+urlResource: 'play ' urlString=URL (format=' with format (' (stereo='S-'|mono='M-') sampleRate=INTEGER 'K-' (oneByte='1B-'|twoBytes='2B-') (signed='s-'|unsigned='u-') (littleEndian='l)'|bigEndian='b)') )?;
 
 volumeSection: ' at volume ' volume=INTEGER;
 
@@ -50,6 +53,8 @@ INTEGER_LIST: [0-9]+ (',' [0-9]+)*;
 DOUBLE: [0-9]+ '.' [0-9]+;
 
 FILENAME: [A-Za-z0-9]+ '.' [A-Za-z0-9]+;
+
+URL: 'http' 's'? '://' [^ ]+;
 
 VECTOR_3D: '(' [0-9]+ ',' [0-9]+ ',' [0-9]+ ')';
 
