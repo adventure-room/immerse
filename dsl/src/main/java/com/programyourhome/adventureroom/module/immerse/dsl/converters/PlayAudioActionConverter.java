@@ -34,6 +34,7 @@ import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Pl
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Resource;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.SoundSource;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.UrlResource;
+import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Volume;
 import com.programyourhome.adventureroom.module.immerse.model.SpeakerExternalResource;
 import com.programyourhome.immerse.domain.format.ByteOrder;
 import com.programyourhome.immerse.domain.format.ImmerseAudioFormat;
@@ -70,7 +71,10 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseVolumeSection(VolumeSectionContext context, PlayAudioAction action) {
-        action.volume = Optional.of(this.toInt(context.volume));
+        Volume volume = new Volume();
+        volume.volumePercentage = this.toInt(context.volume);
+        Optional.ofNullable(context.fadeIn).ifPresent(fadeIn -> volume.fadeInMillis = Optional.of((int) (this.toDouble(fadeIn) * 1000)));
+        action.volume = Optional.of(volume);
     }
 
     public void parseSourceSpeakerSection(SourceSpeakerSectionContext context, PlayAudioAction action) {

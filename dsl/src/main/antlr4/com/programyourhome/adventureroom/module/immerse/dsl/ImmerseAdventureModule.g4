@@ -10,7 +10,7 @@ fileResource: 'play ' filename=FILENAME;
 
 urlResource: 'play ' urlString=URL (format=' with format (' (stereo='S-'|mono='M-') sampleRate=INTEGER 'K-' (oneByte='1B-'|twoBytes='2B-') (signed='s-'|unsigned='u-') (littleEndian='l)'|bigEndian='b)') )?;
 
-volumeSection: ' at volume ' volume=INTEGER;
+volumeSection: ' at volume ' volume=INTEGER (' with ' fadeIn=(INTEGER|DOUBLE) ' seconds fade in')?;
 
 sourceSpeakerSection: singleSpeaker | multipleSpeakers | allSpeakers;
 
@@ -42,7 +42,7 @@ playBackgroundMusicAction: backgroundResourceSection volumeSection?;
 
 backgroundResourceSection: 'play background music ' filename=FILENAME;
 
-stopBackgroundMusicAction: 'stop background music';
+stopBackgroundMusicAction: 'stop background music' (' with ' fadeOut=DOUBLE ' seconds fade out')?;
 
 // TODO: Use fragments for number, word, etc
 

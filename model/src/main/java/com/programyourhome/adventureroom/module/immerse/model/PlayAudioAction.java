@@ -13,7 +13,7 @@ import com.programyourhome.immerse.domain.location.Vector3D;
 public class PlayAudioAction implements Action {
 
     public Resource resource;
-    public Optional<Integer> volume = Optional.empty();
+    public Optional<Volume> volume = Optional.empty();
     public Optional<SoundSource> soundSource = Optional.empty();
     public Optional<DynamicLocation> listenerLocation = Optional.empty();
     public Optional<Normalize> normalize = Optional.empty();
@@ -44,6 +44,11 @@ public class PlayAudioAction implements Action {
         public String toString() {
             return this.getFilename().orElse("") + this.getUrl().map(urlResource -> urlResource.urlString).orElse("");
         }
+    }
+
+    public static class Volume {
+        public int volumePercentage;
+        public Optional<Integer> fadeInMillis = Optional.empty();
     }
 
     public static class UrlResource {

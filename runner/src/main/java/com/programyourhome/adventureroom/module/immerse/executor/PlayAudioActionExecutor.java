@@ -40,7 +40,11 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
             }
         });
 
-        action.volume.ifPresent(volumePercentage -> builder.volume(volumePercentage / 100.0));
+        action.volume.ifPresent(volume -> {
+            double fractionalVolume = volume.volumePercentage / 100;
+            builder.volume(fractionalVolume);
+            volume.fadeInMillis.ifPresent(fadeInMillis -> builder.linearVolume(0, fractionalVolume, fadeInMillis));
+        });
 
         action.soundSource.ifPresent(soundSource -> {
             soundSource.getSpeakerIds().ifPresent(builder::sourceAtSpeakers);
