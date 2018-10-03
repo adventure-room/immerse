@@ -18,6 +18,7 @@ public class PlayAudioAction implements Action {
     public Optional<DynamicLocation> listenerLocation = Optional.empty();
     public Optional<Normalize> normalize = Optional.empty();
     public Optional<Playback> playback = Optional.empty();
+    public Optional<String> saveAsVariable = Optional.empty();
 
     public static class Resource extends Either {
         public static Resource file(String filename) {

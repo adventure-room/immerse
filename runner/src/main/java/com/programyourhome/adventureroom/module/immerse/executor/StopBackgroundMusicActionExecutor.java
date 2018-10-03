@@ -15,7 +15,11 @@ public class StopBackgroundMusicActionExecutor extends AbstractImmerseExecutor<S
             throw new IllegalStateException("There is no background music playing");
         }
         UUID playbackId = context.getVariableValue(PlayBackgroundMusicActionExecutor.BACKGROUND_MUSIC_VARIABLE_NAME);
-        this.getImmerse(context).stopPlayback(playbackId);
+        if (action.fadeOutMillis.isPresent()) {
+            this.getImmerse(context).fadeOutPlayback(playbackId, action.fadeOutMillis.get());
+        } else {
+            this.getImmerse(context).stopPlayback(playbackId);
+        }
         context.removeVariable(BACKGROUND_MUSIC_VARIABLE_NAME);
     }
 

@@ -106,13 +106,13 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
 
     @Override
     public ScenarioBuilder linearVolume(double from, double to, long inMillis) {
-        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linear(from, to, inMillis));
+        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linear(from, to, inMillis, true));
         return this;
     }
 
     @Override
     public ScenarioBuilder linearVolumeWithDelay(double from, double to, long inMillis, long delayMillis) {
-        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linearWithDelay(from, to, inMillis, delayMillis));
+        this.immerseScenarioSettingsBuilder.volume(LinearDynamicVolume.linearWithDelay(from, to, inMillis, true, delayMillis));
         return this;
     }
 

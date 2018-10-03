@@ -24,6 +24,7 @@ import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModu
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceLocationSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.SourceSpeakerSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.UrlResourceContext;
+import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.VariableSectionContext;
 import com.programyourhome.adventureroom.module.immerse.dsl.ImmerseAdventureModuleParser.VolumeSectionContext;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction.Circling;
@@ -145,6 +146,12 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
         return new Vector3D(coordinates);
     }
 
+    public void parseNormalizeSection(NormalizeSectionContext context, PlayAudioAction action) {
+        action.normalize = StreamUtil.getOneAsOptional(
+                this.parse(context.asOneSpeaker, one -> Normalize.asOneSpeaker()),
+                this.parse(context.asAllSpeakers, all -> Normalize.asAllSpeakers()));
+    }
+
     public void parsePlaybackSection(PlaybackSectionContext context, PlayAudioAction action) {
         action.playback = StreamUtil.getOneAsOptional(
                 this.parse(context.once, once -> Playback.once()),
@@ -153,10 +160,7 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
                 this.parse(context.seconds, seconds -> Playback.seconds(this.toInt(seconds))));
     }
 
-    public void parseNormalizeSection(NormalizeSectionContext context, PlayAudioAction action) {
-        action.normalize = StreamUtil.getOneAsOptional(
-                this.parse(context.asOneSpeaker, one -> Normalize.asOneSpeaker()),
-                this.parse(context.asAllSpeakers, all -> Normalize.asAllSpeakers()));
+    public void parseVariableSection(VariableSectionContext context, PlayAudioAction action) {
+        action.saveAsVariable = Optional.of(this.toString(context.variableName));
     }
-
 }

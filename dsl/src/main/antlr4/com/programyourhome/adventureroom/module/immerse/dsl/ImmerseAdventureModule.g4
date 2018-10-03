@@ -1,8 +1,8 @@
 grammar ImmerseAdventureModule;
 
-action: playAudioAction | playBackgroundMusicAction | stopBackgroundMusicAction;
+action: playAudioAction | stopAudioAction | playBackgroundMusicAction | stopBackgroundMusicAction;
 
-playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection? normalizeSection? playbackSection?;
+playAudioAction: resourceSection volumeSection? (sourceSpeakerSection | sourceLocationSection)? listenerLocationSection? normalizeSection? playbackSection? variableSection?;
 
 resourceSection: fileResource | urlResource;
 
@@ -38,11 +38,17 @@ normalizeSection: asOneSpeaker=' as one speaker' | asAllSpeakers=' as all speake
 // TODO: time should be more flexible
 playbackSection: once=' once' | ' repeat ' repeat=INTEGER ' times' | forever=' repeat forever' | ' for ' seconds=INTEGER ' seconds';
 
+// TODO: proper 'name' typing: regular name vs filename vs etc
+variableSection: ' save as ' variableName=FILENAME;
+
+stopAudioAction: 'stop playing ' variableName=FILENAME (' with ' fadeOut=(INTEGER|DOUBLE) ' seconds fade out')?;
+
 playBackgroundMusicAction: backgroundResourceSection volumeSection?;
 
 backgroundResourceSection: 'play background music ' filename=FILENAME;
 
-stopBackgroundMusicAction: 'stop background music' (' with ' fadeOut=DOUBLE ' seconds fade out')?;
+// TODO: merge overlap with stop audio action
+stopBackgroundMusicAction: 'stop background music' (' with ' fadeOut=(INTEGER|DOUBLE) ' seconds fade out')?;
 
 // TODO: Use fragments for number, word, etc
 
@@ -52,7 +58,7 @@ INTEGER_LIST: [0-9]+ (',' [0-9]+)*;
 
 DOUBLE: [0-9]+ '.' [0-9]+;
 
-FILENAME: [A-Za-z] [A-Za-z0-9\\.]*;
+FILENAME: [A-Za-z] [A-Za-z0-9\\-\\.]*;
 
 URL: 'http' 's'? '://' [^ ]+;
 

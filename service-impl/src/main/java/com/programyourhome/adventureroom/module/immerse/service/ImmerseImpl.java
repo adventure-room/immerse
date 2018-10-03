@@ -39,8 +39,13 @@ public class ImmerseImpl implements Immerse {
     }
 
     @Override
-    public void waitForPlayback(UUID playbackID) {
-        this.client.waitForPlayback(playbackID);
+    public void waitForPlayback(UUID playbackId) {
+        this.client.waitForPlayback(playbackId);
+    }
+
+    @Override
+    public void fadeOutPlayback(UUID playbackId, int millis) {
+        this.client.fadeOutPlayback(playbackId, millis);
     }
 
     @Override

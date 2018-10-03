@@ -17,6 +17,8 @@ public interface Immerse {
 
     public void waitForPlayback(UUID playbackID);
 
+    public void fadeOutPlayback(UUID playbackId, int millis);
+
     public void stopPlayback(UUID playbackId);
 
     public void quit();

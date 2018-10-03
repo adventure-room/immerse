@@ -72,6 +72,9 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
 
         Scenario scenario = builder.build();
         UUID playbackID = this.getImmerse(context).playScenario(scenario);
+
+        action.saveAsVariable.ifPresent(variableName -> context.setVariableValue(variableName, playbackID));
+
         this.getImmerse(context).waitForPlayback(playbackID);
     }
 
