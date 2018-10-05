@@ -172,13 +172,15 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
 
     @Override
     public ScenarioBuilder fieldOfHearingVolume(Factory<DynamicLocation> sourceLocation, Factory<DynamicLocation> listenerLocation) {
-        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(sourceLocation, listenerLocation));
+        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(
+                FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(this.immerseSettings.getRoom(), sourceLocation, listenerLocation));
         return this;
     }
 
     @Override
     public ScenarioBuilder fieldOfHearingVolume(Factory<DynamicLocation> sourceLocation, Factory<DynamicLocation> listenerLocation, double angle) {
-        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(sourceLocation, listenerLocation, angle));
+        this.immerseScenarioSettingsBuilder.volumeRatiosAlgorithm(
+                FieldOfHearingVolumeRatiosAlgorithm.fieldOfHearing(this.immerseSettings.getRoom(), sourceLocation, listenerLocation, angle));
         return this;
     }
 

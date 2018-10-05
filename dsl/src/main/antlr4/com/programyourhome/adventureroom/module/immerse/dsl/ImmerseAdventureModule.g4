@@ -58,7 +58,8 @@ INTEGER_LIST: [0-9]+ (',' [0-9]+)*;
 
 DOUBLE: [0-9]+ '.' [0-9]+;
 
-FILENAME: [A-Za-z] [A-Za-z0-9\\-\\.]*;
+//TODO: how to include characters like '-', seem to fail now when adding them to the regex. Also [^ ]* seems to fail
+FILENAME: [A-Za-z] [A-Za-z0-9\\.]*;
 
 URL: 'http' 's'? '://' [^ ]+;
 

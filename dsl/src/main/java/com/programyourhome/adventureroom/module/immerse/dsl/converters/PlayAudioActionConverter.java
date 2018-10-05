@@ -98,14 +98,14 @@ public class PlayAudioActionConverter extends AbstractReflectiveParseTreeAntlrAc
     }
 
     public void parseSourceLocationSection(SourceLocationSectionContext context, PlayAudioAction action) {
-        action.soundSource = Optional.of(SoundSource.dynamicLocation(this.parseListenerSection(context.locationSection(), action)));
+        action.soundSource = Optional.of(SoundSource.dynamicLocation(this.parseLocationSection(context.locationSection(), action)));
     }
 
     public void parseListenerLocationSection(ListenerLocationSectionContext context, PlayAudioAction action) {
-        action.listenerLocation = Optional.of(this.parseListenerSection(context.locationSection(), action));
+        action.listenerLocation = Optional.of(this.parseLocationSection(context.locationSection(), action));
     }
 
-    private DynamicLocation parseListenerSection(LocationSectionContext context, PlayAudioAction action) {
+    private DynamicLocation parseLocationSection(LocationSectionContext context, PlayAudioAction action) {
         return StreamUtil.getOne(
                 this.parse(context.fixedLocation(), this::parseFixedLocation),
                 this.parse(context.pathLocation(), this::parsePathLocation),
