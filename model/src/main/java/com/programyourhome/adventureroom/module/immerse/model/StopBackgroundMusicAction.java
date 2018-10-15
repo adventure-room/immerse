@@ -6,6 +6,6 @@ import com.programyourhome.adventureroom.model.script.action.Action;
 
 public class StopBackgroundMusicAction implements Action {
 
-    public Optional<Integer> fadeOutMillis;
+    public Optional<Integer> fadeOutMillis = Optional.empty();
 
 }

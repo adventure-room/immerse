@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.toolbox.ContentCategory;
 import com.programyourhome.adventureroom.model.toolbox.DataStream;
+import com.programyourhome.adventureroom.model.util.IOUtil;
 import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusicAction;
 import com.programyourhome.immerse.domain.Scenario;
 import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
@@ -14,6 +15,8 @@ import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
 public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<PlayBackgroundMusicAction> {
 
     public static final String BACKGROUND_MUSIC_VARIABLE_NAME = "immerse.background.music";
+
+    private UUID playbackId;
 
     @Override
     public void execute(PlayBackgroundMusicAction action, ExecutionContext context) {
@@ -32,8 +35,14 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
                 .sourceAtAllSpeakers()
                 .playRepeatForever()
                 .build();
-        UUID playbackID = this.getImmerse(context).playScenario(scenario);
-        context.setVariableValue(BACKGROUND_MUSIC_VARIABLE_NAME, playbackID);
+        this.playbackId = this.getImmerse(context).playScenario(scenario);
+        context.setVariableValue(BACKGROUND_MUSIC_VARIABLE_NAME, this.playbackId);
+    }
+
+    @Override
+    public void stop(ExecutionContext context) {
+        IOUtil.waitForCondition(() -> this.playbackId != null);
+        this.getImmerse(context).stopPlayback(this.playbackId);
     }
 
 }

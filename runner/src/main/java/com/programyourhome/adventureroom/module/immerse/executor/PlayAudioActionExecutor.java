@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.programyourhome.adventureroom.model.execution.ExecutionContext;
 import com.programyourhome.adventureroom.model.toolbox.ContentCategory;
 import com.programyourhome.adventureroom.model.toolbox.DataStream;
+import com.programyourhome.adventureroom.model.util.IOUtil;
 import com.programyourhome.adventureroom.model.util.StreamUtil;
 import com.programyourhome.adventureroom.module.immerse.model.PlayAudioAction;
 import com.programyourhome.adventureroom.module.immerse.service.ScenarioBuilder;
@@ -17,6 +18,8 @@ import com.programyourhome.immerse.domain.location.dynamic.DynamicLocation;
 
 public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAction> {
 
+    private UUID playbackId;
+
     @Override
     public void execute(PlayAudioAction action, ExecutionContext context) {
         ScenarioBuilder builder = this.getImmerse(context).scenarioBuilder()
@@ -24,6 +27,8 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
                 .description("Audio '" + action.resource.toString() + "' triggered by the Immerse Adventure Module");
 
         action.resource.getFilename().ifPresent(filename -> {
+            // builder.file("/home/ubuntu/audio/" + filename);
+            // FIXME: temp testing
             DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, filename);
             URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
             // TODO: for now hardcoded wav for all files
@@ -41,7 +46,7 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
         });
 
         action.volume.ifPresent(volume -> {
-            double fractionalVolume = volume.volumePercentage / 100;
+            double fractionalVolume = volume.volumePercentage / 100.0;
             builder.volume(fractionalVolume);
             volume.fadeInMillis.ifPresent(fadeInMillis -> builder.linearVolume(0, fractionalVolume, fadeInMillis));
         });
@@ -71,11 +76,17 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
         });
 
         Scenario scenario = builder.build();
-        UUID playbackID = this.getImmerse(context).playScenario(scenario);
+        this.playbackId = this.getImmerse(context).playScenario(scenario);
 
-        action.saveAsVariable.ifPresent(variableName -> context.setVariableValue(variableName, playbackID));
+        action.saveAsVariable.ifPresent(variableName -> context.setVariableValue(variableName, this.playbackId));
 
-        this.getImmerse(context).waitForPlayback(playbackID);
+        this.getImmerse(context).waitForPlayback(this.playbackId);
+    }
+
+    @Override
+    public void stop(ExecutionContext context) {
+        IOUtil.waitForCondition(() -> this.playbackId != null);
+        this.getImmerse(context).stopPlayback(this.playbackId);
     }
 
     private Factory<DynamicLocation> toImmerseDynamicLocation(
