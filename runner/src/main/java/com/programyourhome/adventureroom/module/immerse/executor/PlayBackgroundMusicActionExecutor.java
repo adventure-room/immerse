@@ -8,6 +8,7 @@ import com.programyourhome.adventureroom.model.toolbox.ContentCategory;
 import com.programyourhome.adventureroom.model.toolbox.DataStream;
 import com.programyourhome.adventureroom.model.util.IOUtil;
 import com.programyourhome.adventureroom.module.immerse.model.PlayBackgroundMusicAction;
+import com.programyourhome.adventureroom.module.immerse.service.ScenarioBuilder;
 import com.programyourhome.immerse.domain.Scenario;
 import com.programyourhome.immerse.domain.audio.resource.AudioFileType;
 
@@ -25,13 +26,23 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
         }
         DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, action.filename);
         URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
-        Scenario scenario = this.getImmerse(context).scenarioBuilder()
+        ScenarioBuilder builder = this.getImmerse(context).scenarioBuilder()
                 .name("Background Music")
                 .description("Background music '" + action.filename + "' triggered by the Immerse Adventure Module")
-                .urlWithType(url.toString(), AudioFileType.WAVE)
-                // Background music, so not full volume.
-                // TODO: make a property out of default setting
-                .volume(action.volume.map(volumePercentage -> volumePercentage / 100.0).orElse(0.3))
+                .urlWithType(url.toString(), AudioFileType.WAVE);
+
+        // TODO: make a property out of default setting
+        // Background music, so not full volume.
+        // Set the default, which can be overridden below.
+        builder.volume(0.3);
+
+        action.volume.ifPresent(volume -> {
+            double fractionalVolume = volume.volumePercentage / 100.0;
+            builder.volume(fractionalVolume);
+            volume.fadeInMillis.ifPresent(fadeInMillis -> builder.linearVolume(0, fractionalVolume, fadeInMillis));
+        });
+
+        Scenario scenario = builder
                 .sourceAtAllSpeakers()
                 .playRepeatForever()
                 .build();
