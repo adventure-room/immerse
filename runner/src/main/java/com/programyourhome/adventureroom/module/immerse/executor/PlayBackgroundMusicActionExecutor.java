@@ -24,11 +24,13 @@ public class PlayBackgroundMusicActionExecutor extends AbstractImmerseExecutor<P
         if (context.isVariableDefined(BACKGROUND_MUSIC_VARIABLE_NAME)) {
             throw new IllegalStateException("There is already background music playing");
         }
+
         DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, action.filename);
         URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
         ScenarioBuilder builder = this.getImmerse(context).scenarioBuilder()
                 .name("Background Music")
                 .description("Background music '" + action.filename + "' triggered by the Immerse Adventure Module")
+                // TODO: Now always default wav
                 .urlWithType(url.toString(), AudioFileType.WAVE);
 
         // TODO: make a property out of default setting

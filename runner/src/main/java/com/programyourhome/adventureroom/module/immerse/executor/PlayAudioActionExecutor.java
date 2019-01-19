@@ -27,8 +27,6 @@ public class PlayAudioActionExecutor extends AbstractImmerseExecutor<PlayAudioAc
                 .description("Audio '" + action.resource.toString() + "' triggered by the Immerse Adventure Module");
 
         action.resource.getFilename().ifPresent(filename -> {
-            // builder.file("/home/ubuntu/audio/" + filename);
-            // FIXME: temp testing
             DataStream dataStream = context.getToolbox().getContentService().getContent(ContentCategory.AUDIO, filename);
             URL url = context.getToolbox().getDataStreamToUrl().exposeDataStream(dataStream);
             // TODO: for now hardcoded wav for all files
