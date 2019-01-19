@@ -160,8 +160,8 @@ public class ScenarioBuilderImpl implements ScenarioBuilder {
     @Override
     public Factory<DynamicLocation> circling(Vector3D center, double startAngle, double radius, double unitsPerSecond, boolean clockwise) {
         double circumference = 2 * Math.PI * radius;
-        double millisForFullCircle = circumference / unitsPerSecond * 1000;
-        return HorizontalCircleDynamicLocation.horizontalCircle(center, startAngle, radius, clockwise, millisForFullCircle);
+        double millisPerFullCircle = circumference / unitsPerSecond * 1000;
+        return HorizontalCircleDynamicLocation.horizontalCircle(center, startAngle, radius, clockwise, millisPerFullCircle);
     }
 
     @Override
